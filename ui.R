@@ -6,7 +6,7 @@ library(leaflet)
 library(maps)
 
 shinyUI(dashboardPage(skin = "black",
-    dashboardHeader(title = "Dashboard of Top#10 Miami's 311 Service Requests",titleWidth = 400),
+    dashboardHeader(title = "Dashboard of Miami's 311 Service Requests for 2019",titleWidth = 700),
     dashboardSidebar(
         sidebarUserPanel(name="",subtitle="",image = "./sr_admin.jpg"),
         sidebarMenu(id='sideBarMenu',
@@ -16,7 +16,7 @@ shinyUI(dashboardPage(skin = "black",
         
         conditionalPanel("input.sideBarMenu == 'map'",
             selectizeInput("month",
-                           "Select Month for Gauge Chat",
+                           "Select Month",
                            multiple=TRUE,
                            choices=unique(x$month),
                            selected=sort(unique(x$month))[1]),
@@ -56,35 +56,66 @@ shinyUI(dashboardPage(skin = "black",
                             '))),
         tabItems(
             tabItem(tabName = "summary",
-                    fluidRow(box(
-                        h2(tags$b("Dashboard Information:")),
-                        tags$hr(),
-                        h4('Welcome to my Data Visualization project using packages such as RShiny, Leaflet, and Plotly. The main goals of this project were to analyze a large dataset and to create an interactive dashboard that enables a user to uncover potential insights on both a temporal and geographic level.'),
-                        tags$hr(),
-                        p('To achieve this, I developed two visualizations that can be accessed through the left-hand navigation pane.\
-                            The Interactive Chart provides a user a way to identify unique trends over time by filtering \
-                          by complaint type, borough, or time. And to further investigate a discovered trend, the Interactive Map can be used to similarly filter and then view geographic representations of incident activity.\
-                          Feel free to toggle a heatmap, cluster, and top 50 display to explore the most reported addresses both on the map and within the data table beneath it.'),
-                        tags$hr(),
-                        p('My main inspiration for this project came from a ', tags$a(href="https://www.youtube.com/watch?v=6xsvGYIxJok", "video"),' on data storytelling. I also wanted to understand how NYC Open Data could provide a deeper understanding of the dynamic city we live in. \
-                            For reference, part of my approach in summarizing this dataset of over 2 million rows was to consolidate as many of the similar complaint types as I could into uniform categories.\
-                          Through this process, I narrowed down the over 250 complaint types into 10 categories such as \"noise\", \"vermin\", \"unsanitary\", \"construction\", etc. For example, the category \"tree\" is actually an aggregation of numerous complaint_types found such as:',tags$li('Damaged Tree'),
-                          tags$li("Overgrown Tree/Branches"), tags$li("Dead Tree"), tags$li("New Tree Request")),
-                        tags$br(),
-                        tags$p('Lastly, this app is a work in progress and some possible directions I would like to extend it would be:', tags$li("Add external data such as rent price or crime data to explore any potential correlation"),
-                               tags$li("Improve performance at higher data volumes"), tags$li('Develop real-time integration with Open Data API')),width=12, status='primary')
-                         )
-                    ),
+                    fluidRow(
+                        box(
+                            h2(tags$b("Dashboard Information:")),
+                            tags$hr(),
+                            h4('The 311 Service Requests Dashboard include service requests logged in the year of 2019 by the City of Miami-Dade County. This information is publicly available in the Miami Dade County’s Open Data portal', tags$a(href="https://www.gis-mdc.opendata.arcgis.com/"), '. The main goals of this project were to analyze a large dataset and to create an interactive dashboard that enables a user to uncover potential insights on both a temporal and geographic level.',
+                               tags$br(),tags$br(),'The data sets include services completed reactively and proactively by Miami-Dade County departments and requests submitted by citizens via phone (311), online (miamidade.gov), and other self service channels such as the 311Direct mobile application.'),
+                            
+                            tags$hr(),
+                            p(h3(tags$b('Who is it for and why?')),
+                              tags$br(),
+                              'For the ease of use and to get most useful insights out this dashboard, top ten service request types have been filtered from the data and used to build this dashboard. 
+                              This dashboard is useful mostly for internal use within Miami-Dade County by executives and head of Departments to:',
+                                tags$li("Measure KPIs"),
+                                tags$li("Identify problem areas/Improve process efficiency"),
+                                tags$li("Resource Allocation-scheduled maintenance and front desk"),
+                                tags$li("Improve/Monitor effectiveness of IT tools/channels"),
+                              ),
+                            
+                            tags$hr(),
+                            p(h3(tags$b('What is in the dashboard?')),
+                                tags$br(),'The Dashboard consist of two main menus named 1. Map and Charts and 2. Data.',
+                                tags$li("Map and Charts: This menu has various types of charts and a map shows clusters of selected request types. There are two conditional filters to select Month and Type of Request based on which charts will display visuals."),
+                                tags$li("Data: This menu shows the data table that has been used to build charts and the map. Data table can be searched and filtered by using any search word relevant to service requests. Data table has been cutdown to limited number of useful columns."),
+                                ),
+                            tags$br(),
+                            tags$hr(),
+                            p(h3(tags$b('How to use?')),
+                              tags$br(),
+                              'Which Department is performing well? Select the month from the dropdown list of months and the Gauge Chart will show the percentage of the requests handled on-time by top 5 departments. If you select multiple months, the Gauge Chart will sum up the requests for selected months and shows the results.',
+                              
+                              tags$br(),
+                              tags$b('How many requests logged each day during 2019?'), 'Click on the cell of desired day on the time series map and it will display the count. We can notice busiest days during the year by looking at the color density.',
+                              tags$br(),
+                              tags$b('How many requests for each month and what types are they?'), 'Select a month or multiple months from dropdown list of months, then the bar chart will show the count of each request type for selected months. You can turn on/off the type of requests by clicking on the legend items.',
+                              tags$br(),
+                              tags$b('Counts on the method of request received?'), 'This bar chart shows different types and counts of methods/channels through which requested were received from citizens or internal departments. Select a month or multiple months from dropdown list of months, then the bar chart will show the count of each method/channel and request type for selected months.',
+                              tags$br(),
+                              tags$b('Want to see locations of these events on the map?'), 'Select months and type of requests from dropdown lists and the map will render clusters of the requests accordingly. As you zoom in, clusters will break down until the map shows individual event/request. You can identify the address by clicking on the markers.',
+                              tags$br(),
+                              tags$b('Want to know the count of each request type per City?'), 'Select months and type of requests from dropdown lists and the bar chart will show the count and type of requests for each city.',
+                              tags$br(),
+                              tags$b('Want to explore the underlying data?'), 'Click on the “Data” menu which shows the data table on a different page. Enter a search word in the Search textbox and the table will be filter if it finds the word in any of the columns. Multiple words can be entered by typing them with a space in between.'
+                                ),
+                            tags$p(h3(tags$b('Insights and what’s next?')),
+                                   tags$br(),
+                                    tags$li("Insights are endless and depending on the questions asked by each individual to this dashboard, because this dashboard caters for different groups of audiences and for different purposes."), 
+                                    tags$li("Can be improved by including more filtering controls to drilldown on the information."),
+                                    tags$li("Can be targeted for citizens by including insensitive data and different kind of measures."),
+                                    tags$li("More interaction can be built between the map and charts.")),width=12, status='primary')
+                    )),
             tabItem(tabName = "map",
                     #fluidRow(infoBoxOutput("maxBox"),
                      #        infoBoxOutput("minBox"),
                        #      infoBoxOutput("avgBox")),
-                    fluidRow(box(htmlOutput("gauge"),height = 200,solidHeader = TRUE,title ="Monthly % of requests handeled on-time by each Daparment"),
-                             box(htmlOutput("time"), height = 200,solidHeader = TRUE,footer = "Total Number of Service Requests for 2019")),
-                    fluidRow(box(htmlOutput("bar"), height =300),
-                            (box(htmlOutput("sourcepie"), height =300,title = "Source of the request"))),
-                    fluidRow(box(leafletOutput("mymap"), height =400),
-                             box(plotlyOutput("plotlybar"), height =400))
+                    fluidRow(box(htmlOutput("gauge"),height = 200,solidHeader = TRUE,title ="Monthly % of requests handeled on-time by each Deparment"),
+                             box(htmlOutput("time"), height = 200,solidHeader = TRUE,footer = "Daily Number of Service Requests for 2019")),
+                    fluidRow(box(plotlyOutput("plotlybar2"), height =300),
+                            (box(plotlyOutput("sourcebar"), height =300))),
+                    fluidRow(box(leafletOutput("mymap"), height =450),
+                             box(plotlyOutput("plotlybar"), height =450))
                     
                     ),
             tabItem(tabName = "data",
