@@ -35,7 +35,7 @@ table_disp=srdata%>%select(ticket_id,
                           date_created,
                           date_closed)
 
-#top 10 service requests by count and status ="Open"
+#top 10 service requests by count
 top10=group_by(srdata,issue_type)%>%summarise(n())%>%top_n(10)
 vec10=as.vector(unlist(top10$issue_type))
 srdata_top10=table_disp%>%filter(issue_type %in% vec10)
@@ -68,16 +68,3 @@ x=mutate(x,ontime=ifelse(actual_completed_days<=0,'pending',ifelse(actual_comple
 #for Data table display
 data_table=select(srdata_top10,ticket_id,issue_type,ticket_status,case_owner,info,method_received,month)
 
-#clean_date_str <- function( date_str ){
-#  require( lubridate )
-#  parse_date_time( date_str, orders = c('Ymd','mdY','mdy') )
-#}
-
-
-# convert matrix to dataframe
-#state_stat <- data.frame(state.name = rownames(state.x77), state.x77)
-#city=map()
-# remove row names
-#rownames(state_stat) <- NULL
-# create variable with colnames as choice
-#col_choices <- colnames(table_disp)
